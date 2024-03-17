@@ -1,4 +1,5 @@
 use std::io;
+use std::thread;
 use std::time::Instant;
 
 use crossterm::event::{self, Event, KeyCode, KeyEvent, KeyEventKind};
@@ -7,6 +8,8 @@ use ratatui::{
     symbols::border,
     widgets::{block::*, *},
 };
+use rodio::source::SineWave;
+use rodio::{OutputStream, Source};
 
 mod tui;
 
@@ -126,6 +129,7 @@ impl App {
     }
 
     fn start_timing(&mut self) {
+        beep();
         self.state = State::Running;
         self.total_begin = Instant::now();
         self.current_begin = Instant::now();
@@ -148,6 +152,7 @@ impl App {
     }
 
     fn solve_done(&mut self) {
+        beep();
         let duration = self.current_begin.elapsed().as_secs_f32();
         if duration < 0.5 {
             return;
@@ -407,4 +412,13 @@ fn time_to_string(time_secs: f32) -> String {
     let mins = time_secs as u32 / 60;
     let secs = time_secs - mins as f32 * 60.0;
     format!("{}:{:2.2}", mins, secs)
+}
+
+fn beep() {
+    thread::spawn(|| {
+        let (_stream, stream_handle) = OutputStream::try_default().unwrap();
+        let source = SineWave::new(1000.0);
+        stream_handle.play_raw(source.convert_samples()).unwrap();
+        std::thread::sleep(std::time::Duration::from_millis(300));
+    });
 }
