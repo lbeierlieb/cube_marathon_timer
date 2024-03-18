@@ -182,7 +182,7 @@ impl App {
 impl Widget for &App {
     fn render(self, area: Rect, buf: &mut Buffer) {
         let title = match self.state {
-            State::Begin => Title::from(" Cube Marathon Timer ".bold()),
+            State::Begin => Title::from(" Blazingly fast Cube Marathon Timer ".bold()),
             State::Running => Title::from(" Session in Progress! Times: "),
             State::Finished => Title::from(" Session done! Times: "),
         };
