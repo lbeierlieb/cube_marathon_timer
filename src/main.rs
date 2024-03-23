@@ -1,5 +1,6 @@
 use std::io;
 use std::thread;
+use std::time::Duration;
 use std::time::Instant;
 
 use crossterm::event::{self, Event, KeyCode, KeyEvent, KeyEventKind};
@@ -96,14 +97,16 @@ impl App {
 
     /// updates the application's state based on user input
     fn handle_events(&mut self) -> io::Result<()> {
-        match event::read()? {
-            // it's important to check that the event is a key press event as
-            // crossterm also emits key release and repeat events on Windows.
-            Event::Key(key_event) if key_event.kind == KeyEventKind::Press => {
-                self.handle_key_event(key_event)
-            }
-            _ => {}
-        };
+        if crossterm::event::poll(Duration::from_millis(50))? {
+            match event::read()? {
+                // it's important to check that the event is a key press event as
+                // crossterm also emits key release and repeat events on Windows.
+                Event::Key(key_event) if key_event.kind == KeyEventKind::Press => {
+                    self.handle_key_event(key_event)
+                }
+                _ => {}
+            };
+        }
         Ok(())
     }
 
