@@ -152,11 +152,11 @@ impl App {
     }
 
     fn solve_done(&mut self) {
-        beep();
         let duration = self.current_begin.elapsed().as_secs_f32();
         if duration < 0.5 {
             return;
         }
+        beep();
         self.counter += 1;
         let duration = self.current_begin.elapsed().as_secs_f32();
         self.current_begin = Instant::now();
